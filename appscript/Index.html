@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <style>
+    :root {
+      --blue: #2563eb;
+      --blue-dark: #1e40af;
+      --green: #10b981;
+      --green-dark: #047857;
+      --bg: #f6fbff;
+      --card: #ffffff;
+      --ink: #0f172a;
+      --muted: #64748b;
+      --line: #dbeafe;
+      --danger: #dc2626;
+      --grey: #64748b;
+      --grey-bg: #f1f5f9;
+      --grey-border: #cbd5e1;
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.10);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background: radial-gradient(circle at top left, #dbeafe 0, #ecfdf5 38%, var(--bg) 78%);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+
+    .app {
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 18px 16px 38px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 2px 18px;
+    }
+
+    .brand { display: flex; flex-direction: column; }
+    .brand h1 { margin: 0; font-size: 30px; letter-spacing: -0.04em; }
+    .brand span { color: var(--muted); font-size: 14px; }
+    .pill {
+      background: rgba(255,255,255,.72);
+      border: 1px solid rgba(37,99,235,.12);
+      padding: 8px 11px;
+      border-radius: 999px;
+      color: var(--blue-dark);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .card {
+      background: rgba(255,255,255,.90);
+      border: 1px solid rgba(219,234,254,.9);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px;
+      margin-bottom: 14px;
+      backdrop-filter: blur(10px);
+    }
+
+    .balance-card {
+      background: linear-gradient(135deg, #2563eb, #10b981);
+      color: #fff;
+      border: none;
+    }
+    .label { font-size: 13px; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+    .balance-card .label { color: rgba(255,255,255,.82); }
+    .balance-meaning { font-size: 20px; font-weight: 800; margin-top: 8px; }
+    .balance-amount { font-size: 48px; line-height: 1; font-weight: 900; letter-spacing: -0.05em; margin-top: 8px; }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    button {
+      appearance: none;
+      border: 0;
+      border-radius: 18px;
+      padding: 15px 14px;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    .primary { background: var(--blue); color: white; }
+    .green { background: var(--green); color: white; }
+    .secondary { background: #e0f2fe; color: var(--blue-dark); }
+    .ghost { background: #ecfdf5; color: var(--green-dark); }
+    .danger { background: #fee2e2; color: var(--danger); }
+    .undo { background: var(--grey-bg); color: var(--grey); border: 1px solid var(--grey-border); }
+    .tiny { font-size: 13px; padding: 11px 12px; }
+    .full { grid-column: 1 / -1; }
+    button:disabled { opacity: .55; cursor: wait; }
+
+    .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .stat {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 14px;
+    }
+    .stat .num { margin-top: 5px; font-size: 24px; font-weight: 900; letter-spacing: -0.04em; }
+
+    .list { display: flex; flex-direction: column; gap: 9px; margin-top: 12px; }
+    .item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 12px;
+      border-radius: 16px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+    }
+    .item-title { font-weight: 800; }
+    .item-meta { color: var(--muted); font-size: 13px; margin-top: 2px; }
+    .item-amount { font-weight: 900; }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    .form-title { margin: 0 0 14px; font-size: 24px; letter-spacing: -0.03em; }
+    .field { margin-bottom: 13px; }
+    .field label { display: block; font-size: 13px; color: var(--muted); font-weight: 800; margin: 0 0 6px; }
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid #cbd5e1;
+      border-radius: 14px;
+      padding: 13px 12px;
+      font-size: 16px;
+      font-family: inherit;
+      background: #fff;
+      color: var(--ink);
+    }
+    textarea { min-height: 74px; resize: vertical; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .hint { color: var(--muted); font-size: 13px; margin-top: 6px; }
+    .error { color: var(--danger); font-size: 14px; font-weight: 700; margin: 8px 0; min-height: 20px; }
+    .success { color: var(--green-dark); font-size: 14px; font-weight: 800; margin: 8px 0; min-height: 20px; }
+
+    .loader { color: var(--muted); padding: 28px 0; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="topbar">
+      <div class="brand">
+        <h1>SplitSheet</h1>
+        <span>Life ledger for Ethan & Kaya</span>
+      </div>
+      <div class="pill" id="monthPill">Loading</div>
+    </div>
+
+    <section id="home" class="screen active">
+      <div class="card balance-card">
+        <div class="label">Current balance</div>
+        <div class="balance-meaning" id="balanceMeaning">Loading…</div>
+        <div class="balance-amount" id="balanceAmount">$0.00</div>
+      </div>
+
+      <div class="actions">
+        <button class="primary" onclick="openExpense()">➕ Add Expense</button>
+        <button class="green" onclick="openSettle()">🤝 Settle Up</button>
+        <button class="secondary full" onclick="openPayment()">💸 Record Payment</button>
+      </div>
+
+      <div class="card">
+        <div class="label">This month</div>
+        <div class="stats" style="margin-top:12px;">
+          <div class="stat"><div class="label">Spent</div><div class="num" id="monthTotal">$0.00</div></div>
+          <div class="stat"><div class="label">Expenses</div><div class="num" id="monthCount">0</div></div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="undo full tiny" id="undoBtn" onclick="undoLastEntry()" disabled>↩️ Undo Last Entry</button>
+      </div>
+
+      <div class="card">
+        <div class="label">Recent expenses</div>
+        <div id="recentList" class="list"><div class="loader">No expenses yet.</div></div>
+      </div>
+    </section>
+
+    <section id="expense" class="screen">
+      <div class="card">
+        <h2 class="form-title">Add Expense</h2>
+        <div class="field"><label>Date</label><input id="expenseDate" type="date"></div>
+        <div class="field"><label>Description</label><input id="description" type="text" placeholder="Costco, rent, dinner…"></div>
+        <div class="row">
+          <div class="field"><label>Amount</label><input id="amount" type="number" step="0.01" min="0" placeholder="0.00"></div>
+          <div class="field"><label>Paid By</label><select id="paidBy"></select></div>
+        </div>
+        <div class="row">
+          <div class="field"><label>Category</label><select id="category"></select></div>
+          <div class="field"><label>Split</label><select id="splitPreset"></select></div>
+        </div>
+        <div class="field"><label>Notes</label><textarea id="notes" placeholder="Optional"></textarea></div>
+        <div class="field"><label>Receipt Link</label><input id="receiptLink" type="url" placeholder="Optional Google Drive link"></div>
+        <div class="error" id="expenseError"></div>
+        <div class="success" id="expenseSuccess"></div>
+        <div class="actions">
+          <button class="ghost" onclick="goHome()">Cancel</button>
+          <button class="primary" id="saveExpenseBtn" onclick="saveExpense()">Save</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="payment" class="screen">
+      <div class="card">
+        <h2 class="form-title" id="paymentTitle">Record Payment</h2>
+        <div class="field"><label>Date</label><input id="paymentDate" type="date"></div>
+        <div class="row">
+          <div class="field"><label>From</label><select id="paymentFrom"></select></div>
+          <div class="field"><label>To</label><select id="paymentTo"></select></div>
+        </div>
+        <div class="field"><label>Amount</label><input id="paymentAmount" type="number" step="0.01" min="0" placeholder="0.00"></div>
+        <div class="field"><label>Note</label><input id="paymentNote" type="text" placeholder="Optional"></div>
+        <div class="hint" id="settleHint"></div>
+        <div class="error" id="paymentError"></div>
+        <div class="success" id="paymentSuccess"></div>
+        <div class="actions">
+          <button class="ghost" onclick="goHome()">Cancel</button>
+          <button class="green" id="savePaymentBtn" onclick="savePayment()">Save</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+<script>
+  let state = null;
+
+  document.addEventListener('DOMContentLoaded', loadApp);
+
+  function loadApp() {
+    google.script.run
+      .withSuccessHandler(data => {
+        state = data;
+        hydrateOptions();
+        renderHome();
+      })
+      .withFailureHandler(showFatal)
+      .getAppData();
+  }
+
+  function hydrateOptions() {
+    fillSelect('paidBy', state.people);
+    fillSelect('paymentFrom', state.people);
+    fillSelect('paymentTo', state.people.slice().reverse());
+    fillSelect('category', state.categories);
+    fillSelect('splitPreset', state.splitPresets);
+    document.getElementById('splitPreset').value = '50/50';
+    document.getElementById('expenseDate').value = state.today;
+    document.getElementById('paymentDate').value = state.today;
+  }
+
+  function fillSelect(id, values) {
+    const el = document.getElementById(id);
+    el.innerHTML = values.map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
+  }
+
+  function renderHome() {
+    const b = state.balance;
+    document.getElementById('balanceMeaning').textContent = b.meaning;
+    document.getElementById('balanceAmount').textContent = money(b.amount);
+    document.getElementById('monthPill').textContent = state.monthStats.label;
+    document.getElementById('monthTotal').textContent = money(state.monthStats.total);
+    document.getElementById('monthCount').textContent = state.monthStats.count;
+
+    const undoBtn = document.getElementById('undoBtn');
+    if (undoBtn) {
+      const info = state.undoInfo || { available: false, label: 'Nothing to undo' };
+      undoBtn.disabled = !info.available;
+      undoBtn.textContent = info.available ? '↩️ ' + info.label : '↩️ Nothing to undo';
+    }
+
+    const list = document.getElementById('recentList');
+    if (!state.recentExpenses.length) {
+      list.innerHTML = '<div class="loader">No expenses yet.</div>';
+      return;
+    }
+    list.innerHTML = state.recentExpenses.map(e => `
+      <div class="item">
+        <div>
+          <div class="item-title">${escapeHtml(e.description)}</div>
+          <div class="item-meta">${escapeHtml(e.date)} · ${escapeHtml(e.category)} · ${escapeHtml(e.paidBy)} · ${escapeHtml(e.splitPreset)}</div>
+        </div>
+        <div class="item-amount">${money(e.amount)}</div>
+      </div>
+    `).join('');
+  }
+
+  function openExpense() {
+    clearMessages();
+    showScreen('expense');
+  }
+
+  function openPayment() {
+    clearMessages();
+    document.getElementById('paymentTitle').textContent = 'Record Payment';
+    document.getElementById('settleHint').textContent = '';
+    document.getElementById('paymentAmount').value = '';
+    document.getElementById('paymentNote').value = '';
+    showScreen('payment');
+  }
+
+  function openSettle() {
+    clearMessages();
+    document.getElementById('paymentTitle').textContent = 'Settle Up';
+    google.script.run
+      .withSuccessHandler(s => {
+        if (s.settled) {
+          document.getElementById('settleHint').textContent = 'You are already settled up.';
+          document.getElementById('paymentAmount').value = '0.00';
+        } else {
+          document.getElementById('paymentFrom').value = s.from;
+          document.getElementById('paymentTo').value = s.to;
+          document.getElementById('paymentAmount').value = Number(s.amount).toFixed(2);
+          document.getElementById('paymentNote').value = 'Settle up';
+          document.getElementById('settleHint').textContent = s.meaning + ' — ' + money(s.amount);
+        }
+        showScreen('payment');
+      })
+      .withFailureHandler(err => alert(err.message || err))
+      .getSettleUpSuggestion();
+  }
+
+  function goHome() {
+    showScreen('home');
+    loadApp();
+  }
+
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function saveExpense() {
+    const btn = document.getElementById('saveExpenseBtn');
+    btn.disabled = true;
+    clearMessages();
+    const payload = {
+      date: val('expenseDate'),
+      description: val('description'),
+      amount: val('amount'),
+      paidBy: val('paidBy'),
+      category: val('category'),
+      splitPreset: val('splitPreset'),
+      notes: val('notes'),
+      receiptLink: val('receiptLink')
+    };
+    google.script.run
+      .withSuccessHandler(res => {
+        btn.disabled = false;
+        document.getElementById('expenseSuccess').textContent = res.message || 'Saved.';
+        document.getElementById('description').value = '';
+        document.getElementById('amount').value = '';
+        document.getElementById('notes').value = '';
+        document.getElementById('receiptLink').value = '';
+        loadApp();
+        setTimeout(goHome, 450);
+      })
+      .withFailureHandler(err => {
+        btn.disabled = false;
+        document.getElementById('expenseError').textContent = err.message || String(err);
+      })
+      .saveExpense(payload);
+  }
+
+  function savePayment() {
+    const btn = document.getElementById('savePaymentBtn');
+    btn.disabled = true;
+    clearMessages();
+    const payload = {
+      date: val('paymentDate'),
+      from: val('paymentFrom'),
+      to: val('paymentTo'),
+      amount: val('paymentAmount'),
+      note: val('paymentNote')
+    };
+    google.script.run
+      .withSuccessHandler(res => {
+        btn.disabled = false;
+        document.getElementById('paymentSuccess').textContent = res.message || 'Saved.';
+        loadApp();
+        setTimeout(goHome, 450);
+      })
+      .withFailureHandler(err => {
+        btn.disabled = false;
+        document.getElementById('paymentError').textContent = err.message || String(err);
+      })
+      .recordPayment(payload);
+  }
+
+
+  function undoLastEntry() {
+    const info = state && state.undoInfo ? state.undoInfo : { available: false };
+    if (!info.available) {
+      alert('Nothing to undo yet.');
+      return;
+    }
+    const ok = confirm('Undo last entry?\n\n' + info.label);
+    if (!ok) return;
+
+    const btn = document.getElementById('undoBtn');
+    if (btn) btn.disabled = true;
+
+    google.script.run
+      .withSuccessHandler(res => {
+        alert(res.message || 'Undone.');
+        loadApp();
+      })
+      .withFailureHandler(err => {
+        if (btn) btn.disabled = false;
+        alert(err.message || String(err));
+      })
+      .undoLastEntry();
+  }
+
+  function val(id) { return document.getElementById(id).value; }
+  function money(n) { return '$' + (Number(n || 0)).toFixed(2); }
+  function clearMessages() {
+    ['expenseError', 'expenseSuccess', 'paymentError', 'paymentSuccess'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = '';
+    });
+  }
+  function showFatal(err) {
+    document.getElementById('balanceMeaning').textContent = 'Could not load app';
+    document.getElementById('recentList').innerHTML = '<div class="loader">' + escapeHtml(err.message || String(err)) + '</div>';
+  }
+  function escapeHtml(str) {
+    return String(str == null ? '' : str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+</script>
+</body>
+</html>
