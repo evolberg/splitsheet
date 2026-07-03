@@ -2,30 +2,86 @@
 <html>
 <head>
   <title>SplitSheet</title>
+
   <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+
   <meta name="apple-mobile-web-app-title" content="SplitSheet">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#6F8F72">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <style>
-    html, body {
-      margin: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: #f6fbff;
+    * {
+      box-sizing: border-box;
     }
 
-    iframe {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      border: 0;
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #dbeafe, #dcfce7);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #0f172a;
+    }
+
+    .container {
+      text-align: center;
+      padding: 30px;
+    }
+
+    h1 {
+      margin: 0 0 24px;
+      font-size: 42px;
+      font-weight: 700;
+      letter-spacing: -0.05em;
+    }
+
+    .frog-button {
+      display: inline-block;
+      border-radius: 32px;
+      overflow: hidden;
+      text-decoration: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .frog-button img {
+      width: 220px;
+      max-width: 75vw;
+      display: block;
+      border-radius: 32px;
+      box-shadow: 0 18px 40px rgba(15,23,42,.18);
+      transition: transform .15s ease,
+                  box-shadow .15s ease;
+    }
+
+    .frog-button:hover img {
+      transform: translateY(-2px);
+    }
+
+    .frog-button:active img {
+      transform: scale(.97);
+      box-shadow: 0 10px 24px rgba(15,23,42,.15);
     }
   </style>
 </head>
+
 <body>
-  <iframe src="https://script.google.com/macros/s/AKfycbwJLRu7YYOSGH0zWs2X14_8pRBHTMXVEdQ5tBDA8RcDt-a5fThQOfLUKOe61AbEbr1N/exec"></iframe>
+
+<div class="container">
+
+  <h1>SplitSheet</h1>
+
+  <a class="frog-button"
+     href="https://script.google.com/macros/s/AKfycbwJLRu7YYOSGH0zWs2X14_8pRBHTMXVEdQ5tBDA8RcDt-a5fThQOfLUKOe61AbEbr1N/exec">
+
+    <img src="assets/frog-enter.png"
+         alt="Enter SplitSheet">
+
+  </a>
+
+</div>
+
 </body>
 </html>
